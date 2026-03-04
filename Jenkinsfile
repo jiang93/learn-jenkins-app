@@ -48,7 +48,7 @@ pipeline {
                     which serve || echo "serve not in PATH"
                     serve --version
                     serve -s build &
-                    sleep 10
+                    sleep 20
                     npx playwright test
                 '''
             }
