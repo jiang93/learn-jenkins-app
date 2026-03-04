@@ -33,6 +33,12 @@ pipeline {
                     npm run test
                 '''
             }
+
+            post {
+                always {
+                    junit 'test-results/junit.xml'
+            }
+    }
         }
         stage('e2e') {
             agent {
@@ -52,12 +58,6 @@ pipeline {
                     npx playwright test
                 '''
             }
-        }
-    }
-
-    post {
-        always {
-            junit 'test-results/junit.xml'
         }
     }
 }
