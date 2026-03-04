@@ -45,6 +45,8 @@ pipeline {
                 sh '''
                     ls -la
                     npm install -g serve
+                    which serve || echo "serve not in PATH"
+                    serve --version
                     serve -s build &
                     sleep 10
                     npx playwright test
