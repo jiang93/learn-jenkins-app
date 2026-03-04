@@ -1,13 +1,16 @@
 
 pipeline {
-    agent any
+    agent any 
     stages {
-        stage('hello') {
-            steps { // steps executed on the Jenkins agent
-                sh """
-                    echo "hello from Github"
-                """
-            }
+        stage ('build') {
+            sh '''
+                ls -la
+                node --version
+                npm --version 
+                npm ci
+                npm run build
+                ls -la
+            '''
         }
     }
 }
