@@ -2,7 +2,7 @@
 pipeline {
     agent any 
     stages {
-        stage ('build') {
+        stage('build') {
             sh '''
                 ls -la
                 node --version
