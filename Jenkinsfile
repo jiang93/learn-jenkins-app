@@ -3,9 +3,7 @@ pipeline {
     stages {
         stage('prepare') {
             steps {
-                sh'''
-                    cleanWs()
-                '''
+                cleanWs()
             }
         }
         stage('build') {
