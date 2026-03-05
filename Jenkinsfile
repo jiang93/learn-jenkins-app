@@ -31,7 +31,7 @@ pipeline {
                     echo "Test stage"
                     ls build/index.html
                     npm run test
-                    ls -la
+                    ls test-results/junit.xml
                 '''
             }
         }
