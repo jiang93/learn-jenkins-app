@@ -52,7 +52,7 @@ pipeline {
                 sh '''
                     ls -la
                     npm install -g serve
-                    serve -s build --listen 0.0.0.0:3000 & 
+                    serve -s build --listen 3000 & 
                     sleep 10
                     npx playwright test
                     sleep 300
