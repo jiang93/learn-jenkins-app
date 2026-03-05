@@ -44,14 +44,15 @@ pipeline {
             agent {
                 docker {
                     image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
-                    reuseNode true  
+                    reuseNode true 
+                    args '-p 3000:3000'
                 }
             }
             steps {
                 sh '''
                     ls -la
                     npm install -g serve
-                    serve -s build &
+                    serve -s build --listen 0.0.0.0:3000 & 
                     sleep 10
                     npx playwright test
                     sleep 300
