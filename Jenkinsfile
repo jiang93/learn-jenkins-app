@@ -47,6 +47,7 @@ pipeline {
             }
             steps {
                 sh '''
+                    ls test-results/junit.xml
                     ls -la
                     npm install -g serve
                     serve -s build --listen 3000 & 
