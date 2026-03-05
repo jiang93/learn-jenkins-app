@@ -9,6 +9,7 @@ pipeline {
                 }
             }
             steps {
+                clearWS()
                 sh '''
                     ls -la
                     node --version
@@ -19,6 +20,7 @@ pipeline {
                 '''
             }
         }
+
         stage('test') {
             agent {
                 docker {
@@ -35,6 +37,7 @@ pipeline {
                 '''
             }
         }
+
         stage('e2e') {
             agent {
                 docker {
