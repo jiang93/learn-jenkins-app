@@ -20,43 +20,48 @@ pipeline {
             }
         }
 
-        stage('test') {
-            agent {
-                docker {
-                    image 'node:20-alpine'
-                    reuseNode true  
+        stage('run test') {
+            parallel {
+                stage('test') {
+                    agent {
+                        docker {
+                            image 'node:20-alpine'
+                            reuseNode true  
+                        }
+                    }
+                    steps {
+                        sh '''
+                            echo "Test stage"
+                            ls build/index.html
+                            npm run test
+                            ls test-results/junit.xml
+                        '''
+                    }
                 }
-            }
-            steps {
-                sh '''
-                    echo "Test stage"
-                    ls build/index.html
-                    npm run test
-                    ls test-results/junit.xml
-                '''
+
+                stage('e2e') {
+                    agent {
+                        docker {
+                            image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                            reuseNode true 
+                            args '-p 3000:3000'
+                        }
+                    }
+                    steps {
+                        sh '''
+                            ls test-results/junit.xml
+                            npm install -g serve
+                            serve -s build --listen 3000 & 
+                            sleep 10
+                            ls test-results/junit.xml
+                            npx playwright test --reporter=html --list                    
+                            ls test-results/junit.xml
+                        '''
+                    }
+                }
             }
         }
 
-        stage('e2e') {
-            agent {
-                docker {
-                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
-                    reuseNode true 
-                    args '-p 3000:3000'
-                }
-            }
-            steps {
-                sh '''
-                    ls test-results/junit.xml
-                    npm install -g serve
-                    serve -s build --listen 3000 & 
-                    sleep 10
-                    ls test-results/junit.xml
-                    npx playwright test --reporter=html --list                    
-                    ls test-results/junit.xml
-                '''
-            }
-        }
     }
 
     post {
