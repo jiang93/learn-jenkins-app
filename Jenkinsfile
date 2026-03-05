@@ -48,7 +48,6 @@ pipeline {
             steps {
                 sh '''
                     ls test-results/junit.xml
-                    ls -la
                     npm install -g serve
                     serve -s build --listen 3000 & 
                     sleep 10
@@ -61,6 +60,7 @@ pipeline {
 
     post {
         always {
+            sh 'ls test-results/junit.xml'
             junit 'test-results/junit.xml'
             publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'HTML Report', reportTitles: '', useWrapperFileDirectly: true])
         }
