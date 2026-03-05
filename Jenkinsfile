@@ -52,7 +52,7 @@ pipeline {
                     serve -s build --listen 3000 & 
                     sleep 10
                     ls test-results/junit.xml
-                    npx playwright test --reporter=html
+                    npx playwright test --reporter=html --list                    
                     ls test-results/junit.xml
                 '''
             }
@@ -61,7 +61,6 @@ pipeline {
 
     post {
         always {
-            sh 'ls test-results/junit.xml'
             junit 'test-results/junit.xml'
             publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'HTML Report', reportTitles: '', useWrapperFileDirectly: true])
         }
