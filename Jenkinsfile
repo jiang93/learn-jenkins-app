@@ -55,8 +55,10 @@ pipeline {
                     serve -s build --listen 3000 & 
                     sleep 10
                     npx playwright test --reporter=html
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'archiveArtifacts artifacts: \'playwright-report\', followSymlinks: false', reportFiles: 'playwright_index.html', reportName: 'HTML Report', reportTitles: '', useWrapperFileDirectly: true])              
                 '''
             }
         }
+
     }
 }
