@@ -31,6 +31,7 @@ pipeline {
                     echo "Test stage"
                     ls build/index.html
                     npm run test
+                    ls -la
                 '''
             }
         }
@@ -49,6 +50,7 @@ pipeline {
                     serve -s build --listen 3000 & 
                     sleep 10
                     npx playwright test --reporter=html
+                    ls -la
                 '''
             }
         }
