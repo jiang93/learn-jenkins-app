@@ -37,8 +37,8 @@ pipeline {
             post {
                 always {
                     junit 'test-results/junit.xml'
+                }
             }
-    }
         }
         stage('e2e') {
             agent {
@@ -51,11 +51,10 @@ pipeline {
                 sh '''
                     ls -la
                     npm install -g serve
-                    which serve || echo "serve not in PATH"
-                    serve --version
                     serve -s build &
-                    sleep 20
+                    sleep 10
                     npx playwright test
+                    sleep 300
                 '''
             }
         }
