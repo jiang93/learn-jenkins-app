@@ -51,8 +51,9 @@ pipeline {
                     npm install -g serve
                     serve -s build --listen 3000 & 
                     sleep 10
+                    ls test-results/junit.xml
                     npx playwright test --reporter=html
-                    ls -la
+                    ls test-results/junit.xml
                 '''
             }
         }
