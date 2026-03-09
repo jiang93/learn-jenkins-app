@@ -97,6 +97,8 @@ pipeline {
                 script {
                     env.DEPLOY_URL = sh(script: "node-jq -r '.deploy_url' deploy-output.json", returnStdout: true)
                 }
+                echo "website deploy url is ${DEPLOY_URL}"
+
             }
             
             post {
@@ -131,7 +133,7 @@ pipeline {
                     echo "Deploying to production site $NETLIFY_SITE_ID"
                     netlify status
                     netlify deploy --dir build --prod
-                    echo "website deploy url is ${env.CI_ENVIRONMENT_URL}"
+                    echo "website deploy url is ${CI_ENVIRONMENT_URL}"
                     npx playwright test --reporter=html --list                    
                 '''
             }
