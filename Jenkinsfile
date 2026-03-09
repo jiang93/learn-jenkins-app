@@ -48,7 +48,7 @@ pipeline {
                     }
                 }
 
-                stage('e2e') {
+                stage('test e2e') {
                     agent {
                         docker {
                             image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
@@ -73,42 +73,30 @@ pipeline {
                 }
             }
         }
+
         stage('deploy staging') {
+
+            environment {
+                DEPLOY_URL = ''
+            }
             agent {
                 docker {
-                    image 'node:20-alpine'
-                    reuseNode true
+                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                    reuseNode true 
                 }
             }
             steps {
-                sh"""
+                sh '''
                     npm install netlify-cli@20.1.1 -g node-jq
                     netlify --version
                     echo "Deploying to staging site $NETLIFY_SITE_ID"
                     netlify status
                     netlify deploy --dir build --json > deploy-output.json
-                    """
+                    npx playwright test --reporter=html --list                    
+                '''
                 script {
                     env.DEPLOY_URL = sh(script: "node-jq -r '.deploy_url' deploy-output.json", returnStdout: true)
                 }
-
-            }
-        }
-
-        stage('staging e2e') {
-            environment {
-                CI_ENVIRONMENT_URL = '$env.DEPLOY_URL' 
-            }
-            agent {
-                    docker {
-                        image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
-                        reuseNode true 
-                    }
-            }
-            steps {
-                sh '''
-                    npx playwright test --reporter=html --list                    
-                '''
             }
             
             post {
@@ -126,25 +114,7 @@ pipeline {
             }
         }
 
-        stage('deploy prod') {
-            agent {
-                docker {
-                    image 'node:20-alpine'
-                    reuseNode true
-                }
-            }
-            steps {
-                sh"""
-                    npm install netlify-cli@20.1.1 -g
-                    netlify --version
-                    echo "Deploying to production site $NETLIFY_SITE_ID"
-                    netlify status
-                    netlify deploy --dir build --prod
-                    echo "website deploy url is ${env.DEPLOY_URL}"
-                """
-            }
-        }
-        stage('prod e2e') {
+        stage('eploy prod') {
             environment {
                 CI_ENVIRONMENT_URL = 'https://delicate-hui-b0901b.netlify.app' 
             }
@@ -156,6 +126,12 @@ pipeline {
             }
             steps {
                 sh '''
+                    npm install netlify-cli@20.1.1 -g
+                    netlify --version
+                    echo "Deploying to production site $NETLIFY_SITE_ID"
+                    netlify status
+                    netlify deploy --dir build --prod
+                    echo "website deploy url is ${env.CI_ENVIRONMENT_URL}"
                     npx playwright test --reporter=html --list                    
                 '''
             }
