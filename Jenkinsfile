@@ -95,6 +95,29 @@ pipeline {
             }
         }
 
+        stage('staging e2e') {
+            environment {
+                CI_ENVIRONMENT_URL = '$env.DEPLOY_URL' 
+            }
+            agent {
+                    docker {
+                        image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                        reuseNode true 
+                    }
+            }
+            steps {
+                sh '''
+                    npx playwright test --reporter=html --list                    
+                '''
+            }
+            
+            post {
+                always {
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Staging E2E', reportTitles: '', useWrapperFileDirectly: true])
+                }
+            }
+        }
+
         stage('approval') {
             steps {
                 timeout(time: 5, unit: 'MINUTES') {
@@ -130,18 +153,18 @@ pipeline {
                         image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
                         reuseNode true 
                     }
+            }
+            steps {
+                sh '''
+                    npx playwright test --reporter=html --list                    
+                '''
+            }
+            
+            post {
+                always {
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Prodution E2E', reportTitles: '', useWrapperFileDirectly: true])
                 }
-                steps {
-                    sh '''
-                        npx playwright test --reporter=html --list                    
-                    '''
-                }
-                
-                post {
-                    always {
-                        publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright E2E', reportTitles: '', useWrapperFileDirectly: true])
-                    }
-                }
+            }
         }
     }
 }
