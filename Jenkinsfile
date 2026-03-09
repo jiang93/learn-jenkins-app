@@ -98,7 +98,7 @@ pipeline {
                 script {
                     env.DEPLOY_URL = sh(script: "node-jq -r '.deploy_url' deploy-output.json", returnStdout: true)
                 }
-                echo "website deploy url is ${DEPLOY_URL}"
+                echo "website deploy url is $DEPLOY_URL"
 
             }
             
