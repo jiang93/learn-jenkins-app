@@ -67,7 +67,7 @@ pipeline {
                     
                     post {
                         always {
-                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'HTML Report', reportTitles: '', useWrapperFileDirectly: true])
+                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright Local', reportTitles: '', useWrapperFileDirectly: true])
                         }
                     }
                 }
@@ -90,6 +90,28 @@ pipeline {
                     echo "A small change here..."
                 """
             }
+        }
+        stage('prod e2e') {
+            environment {
+                CI_ENVIRONMENT_URL = 'https://delicate-hui-b0901b.netlify.app' 
+            }
+            agent {
+                    docker {
+                        image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                        reuseNode true 
+                    }
+                }
+                steps {
+                    sh '''
+                        npx playwright test --reporter=html --list                    
+                    '''
+                }
+                
+                post {
+                    always {
+                        publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright E2E', reportTitles: '', useWrapperFileDirectly: true])
+                    }
+                }
         }
     }
 }
