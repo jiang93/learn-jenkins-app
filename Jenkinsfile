@@ -87,8 +87,11 @@ pipeline {
                     echo "Deploying to staging site $NETLIFY_SITE_ID"
                     netlify status
                     netlify deploy --dir build --json > deploy-output.json
-                    node-jq -r '.deploy_url' deploy-output.json
-                """
+                    """
+                script {
+                    env.DEPLOY_URL = sh(script: "node-jq -r '.deploy_url' deploy-output.json", returnStdout: true)
+                }
+
             }
         }
 
@@ -114,7 +117,7 @@ pipeline {
                     echo "Deploying to production site $NETLIFY_SITE_ID"
                     netlify status
                     netlify deploy --dir build --prod
-                    echo "A small change here..."
+                    echo "website deploy url is ${env.DEPLOY_URL}"
                 """
             }
         }
