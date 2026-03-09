@@ -114,7 +114,7 @@ pipeline {
             }
         }
 
-        stage('eploy prod') {
+        stage('deploy prod') {
             environment {
                 CI_ENVIRONMENT_URL = 'https://delicate-hui-b0901b.netlify.app' 
             }
