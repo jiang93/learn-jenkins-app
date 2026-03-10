@@ -25,10 +25,14 @@ pipeline {
             }
         }
 
+        stage('docker') {
+            sh 'docker build -t my-playwright .'
+        }
+
         stage('test') {
             agent {
                 docker {
-                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                    image 'my-playwright'
                     reuseNode true 
                     args '-p 3000:3000'
                 }
@@ -36,7 +40,6 @@ pipeline {
             steps {
                 sh '''
                 echo "Test stage"
-                npm install -g serve
                 ls build/index.html
                 npm run test
                 serve -s build --listen 3000 & 
@@ -61,13 +64,12 @@ pipeline {
             }
             agent {
                 docker {
-                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                    image 'my-playwright'
                     reuseNode true 
                 }
             }
             steps {
                 sh '''
-                    npm install netlify-cli@20.1.1 -g node-jq
                     netlify --version
                     echo "Deploying to staging site $NETLIFY_SITE_ID"
                     netlify status
@@ -102,13 +104,12 @@ pipeline {
             }
             agent {
                     docker {
-                        image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                        image 'my-playwright'
                         reuseNode true 
                     }
             }
             steps {
                 sh '''
-                    npm install netlify-cli@20.1.1 -g
                     netlify --version
                     echo "Deploying to production site $NETLIFY_SITE_ID"
                     netlify status
